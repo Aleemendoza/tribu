@@ -1140,6 +1140,7 @@
   "module.dashboard.module_rewards": "Jutalmak",
   "module.dashboard.module_daily_loop": "Ma mozgásban",
   "module.gifts.name": "Ajándékok",
+  "module.expenses.name": "Kiadások",
   "module.gifts.save": "Mentés",
   "module.gifts.created": "Ötlet felírva",
   "module.gifts.updated": "Az ajándék frissítve",

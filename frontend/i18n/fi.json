@@ -1142,6 +1142,7 @@
   "module.dashboard.module_rewards": "Palkinnot",
   "module.dashboard.module_daily_loop": "Tänään liikkeessä",
   "module.gifts.name": "Lahjat",
+  "module.expenses.name": "Kulut",
   "module.gifts.save": "Tallenna",
   "module.gifts.created": "Idea kirjattu",
   "module.gifts.updated": "Lahja päivitetty",

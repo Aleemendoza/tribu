@@ -1166,6 +1166,7 @@
   "module.dashboard.module_rewards": "Rewards",
   "module.dashboard.module_daily_loop": "Today loop",
   "module.gifts.name": "Gifts",
+  "module.expenses.name": "Expenses",
   "module.gifts.save": "Save",
   "module.gifts.created": "Idea noted",
   "module.gifts.updated": "Gift updated",

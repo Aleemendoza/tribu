@@ -1142,6 +1142,7 @@
   "module.dashboard.module_rewards": "Preemiad",
   "module.dashboard.module_daily_loop": "Täna liikvel",
   "module.gifts.name": "Kingitused",
+  "module.expenses.name": "Kulud",
   "module.gifts.save": "Salvesta",
   "module.gifts.created": "Idee kirja pandud",
   "module.gifts.updated": "Kingitus uuendatud",

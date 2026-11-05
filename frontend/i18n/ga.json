@@ -1140,6 +1140,7 @@
   "module.dashboard.module_rewards": "luach saothair",
   "module.dashboard.module_daily_loop": "Sa lá atá inniu ag gluaiseacht",
   "module.gifts.name": "Bronntanais",
+  "module.expenses.name": "Costais",
   "module.gifts.save": "Sábháil",
   "module.gifts.created": "Smaoineamh breactha",
   "module.gifts.updated": "Bronntanas nuashonraithe",

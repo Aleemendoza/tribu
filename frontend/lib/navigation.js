@@ -8,6 +8,7 @@ import {
   CalendarClock,
   ClipboardList,
   Gift,
+  Wallet,
   GraduationCap,
   CalendarRange,
   Settings,
@@ -30,7 +31,7 @@ export const ACCOUNT_NAV_KEYS = ['settings', 'admin'];
 export const NAV_GROUPS = [
   { key: 'today', labelKey: 'nav.group.today', fallback: 'Today', itemKeys: ['dashboard'] },
   { key: 'plan', labelKey: 'nav.group.plan', fallback: 'Plan', itemKeys: ['calendar', 'meal_plans', 'recipes', 'school_timetables', 'weekly_plan'] },
-  { key: 'lists', labelKey: 'nav.group.lists', fallback: 'Lists', itemKeys: ['shopping', 'tasks', 'templates'] },
+  { key: 'lists', labelKey: 'nav.group.lists', fallback: 'Lists', itemKeys: ['shopping', 'tasks', 'expenses', 'templates'] },
   { key: 'family', labelKey: 'module.responsive.group_family', fallback: 'Family', itemKeys: ['family', 'contacts', 'rewards', 'gifts'], pinned: 'family' },
 ];
 
@@ -56,6 +57,7 @@ export const NAV_ITEM_META = {
   shopping: { icon: ShoppingCart, labelKey: 'module.shopping.name' },
   tasks: { icon: CheckSquare, labelKey: 'module.tasks.name' },
   duties: { icon: CalendarClock, labelKey: 'module.duties.name', hideInDemo: true },
+  expenses: { icon: Wallet, labelKey: 'module.expenses.name', adultOnly: true, hideInDemo: true },
   templates: { icon: ClipboardList, labelKey: 'module.templates.name', adultOnly: true, hideInDemo: true },
   meal_plans: { icon: UtensilsCrossed, labelKey: 'module.meal_plans.name' },
   school_timetables: { icon: GraduationCap, labelKey: 'module.school_timetables.name', hideInDemo: true, adultOnly: true },

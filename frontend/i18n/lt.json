@@ -1140,6 +1140,7 @@
   "module.dashboard.module_rewards": "Apdovanojimai",
   "module.dashboard.module_daily_loop": "Šiandien judesyje",
   "module.gifts.name": "Dovanos",
+  "module.expenses.name": "Išlaidos",
   "module.gifts.save": "Išsaugoti",
   "module.gifts.created": "Idėja užrašyta",
   "module.gifts.updated": "Dovana atnaujinta",

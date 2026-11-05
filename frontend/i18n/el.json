@@ -1142,6 +1142,7 @@
   "module.dashboard.module_rewards": "Ανταμοιβές",
   "module.dashboard.module_daily_loop": "Σήμερα σε κίνηση",
   "module.gifts.name": "Δώρα",
+  "module.expenses.name": "Έξοδα",
   "module.gifts.save": "Αποθήκευση",
   "module.gifts.created": "Η ιδέα σημειώθηκε",
   "module.gifts.updated": "Το δώρο ενημερώθηκε",

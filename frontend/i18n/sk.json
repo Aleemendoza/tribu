@@ -1140,6 +1140,7 @@
   "module.dashboard.module_rewards": "Odmeny",
   "module.dashboard.module_daily_loop": "Dnes v pohybe",
   "module.gifts.name": "Darčeky",
+  "module.expenses.name": "Výdavky",
   "module.gifts.save": "Uložiť",
   "module.gifts.created": "Nápad zapísaný",
   "module.gifts.updated": "Darček bol aktualizovaný",

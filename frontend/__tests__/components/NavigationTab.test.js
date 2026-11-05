@@ -38,6 +38,7 @@ const messages = {
   'module.recipes.name': 'Rezepte',
   'module.rewards.name': 'Belohnungen',
   'module.gifts.name': 'Geschenke',
+  'module.expenses.name': 'Ausgaben',
 };
 
 function baseState(overrides) {
@@ -65,6 +66,7 @@ const LABEL_BY_KEY = {
   recipes: 'Rezepte',
   rewards: 'Belohnungen',
   gifts: 'Geschenke',
+  expenses: 'Ausgaben',
   contacts: 'Kontakte',
   notifications: 'Benachrichtigungen',
 };

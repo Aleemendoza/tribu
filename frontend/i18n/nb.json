@@ -1144,6 +1144,7 @@
   "module.dashboard.module_rewards": "Belønninger",
   "module.dashboard.module_daily_loop": "I dag i bevegelse",
   "module.gifts.name": "Gaver",
+  "module.expenses.name": "Utgifter",
   "module.gifts.save": "Lagre",
   "module.gifts.created": "Idé notert",
   "module.gifts.updated": "Gave oppdatert",

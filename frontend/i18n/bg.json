@@ -1143,6 +1143,7 @@
   "module.dashboard.module_rewards": "Награди",
   "module.dashboard.module_daily_loop": "Днес в движение",
   "module.gifts.name": "подаръци",
+  "module.expenses.name": "Разходи",
   "module.gifts.save": "Запазване",
   "module.gifts.created": "Идеята е записана",
   "module.gifts.updated": "Подаръкът е актуализиран",

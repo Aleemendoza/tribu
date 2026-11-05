@@ -1144,6 +1144,7 @@
   "module.dashboard.module_rewards": "Recompensas",
   "module.dashboard.module_daily_loop": "El día en marcha",
   "module.gifts.name": "Regalos",
+  "module.expenses.name": "Gastos",
   "module.gifts.save": "Guardar",
   "module.gifts.created": "Idea anotada",
   "module.gifts.updated": "Regalo actualizado",

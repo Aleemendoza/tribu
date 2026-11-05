@@ -1141,6 +1141,7 @@
   "module.dashboard.module_rewards": "Nagrade",
   "module.dashboard.module_daily_loop": "Danas u pokretu",
   "module.gifts.name": "Pokloni",
+  "module.expenses.name": "Troškovi",
   "module.gifts.save": "spremiti",
   "module.gifts.created": "Ideja zapisana",
   "module.gifts.updated": "Poklon ažuriran",

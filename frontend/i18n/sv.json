@@ -1144,6 +1144,7 @@
   "module.dashboard.module_rewards": "Belöningar",
   "module.dashboard.module_daily_loop": "Idag i rörelse",
   "module.gifts.name": "Gåvor",
+  "module.expenses.name": "Utgifter",
   "module.gifts.save": "Spara",
   "module.gifts.created": "Idé antecknad",
   "module.gifts.updated": "Presenten uppdaterad",

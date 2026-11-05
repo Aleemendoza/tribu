@@ -1148,6 +1148,7 @@
   "module.dashboard.module_rewards": "Recompense",
   "module.dashboard.module_daily_loop": "Astăzi în mișcare",
   "module.gifts.name": "Cadouri",
+  "module.expenses.name": "Cheltuieli",
   "module.gifts.save": "Salvați",
   "module.gifts.created": "Idee notată",
   "module.gifts.updated": "Cadou actualizat",

@@ -1140,6 +1140,7 @@
   "module.dashboard.module_rewards": "Nagrade",
   "module.dashboard.module_daily_loop": "Danes v gibanju",
   "module.gifts.name": "darila",
+  "module.expenses.name": "Stroški",
   "module.gifts.save": "Shrani",
   "module.gifts.created": "Ideja zapisana",
   "module.gifts.updated": "Darilo posodobljeno",

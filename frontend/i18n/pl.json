@@ -1141,6 +1141,7 @@
   "module.dashboard.module_rewards": "Nagrody",
   "module.dashboard.module_daily_loop": "Dzisiejszy rytm",
   "module.gifts.name": "Prezenty",
+  "module.expenses.name": "Wydatki",
   "module.gifts.save": "Zapisz",
   "module.gifts.created": "Zapisano pomysł",
   "module.gifts.updated": "Prezent zaktualizowany",

@@ -6,7 +6,7 @@ import { resolveInitialView } from '../lib/navigationState';
 import { notificationLinkView } from '../lib/notificationLinks';
 import { listThemes } from '../lib/themes';
 
-export const DEFAULT_NAV_ORDER = ['dashboard', 'calendar', 'weekly_plan', 'shopping', 'tasks', 'duties', 'activity', 'templates', 'meal_plans', 'school_timetables', 'recipes', 'family', 'rewards', 'gifts', 'contacts', 'notifications', 'settings', 'admin'];
+export const DEFAULT_NAV_ORDER = ['dashboard', 'calendar', 'weekly_plan', 'shopping', 'tasks', 'expenses', 'duties', 'activity', 'templates', 'meal_plans', 'school_timetables', 'recipes', 'family', 'rewards', 'gifts', 'contacts', 'notifications', 'settings', 'admin'];
 
 const AppContext = createContext(null);
 
@@ -318,7 +318,7 @@ export function AppProvider({ children }) {
     if (stored) {
       setLang(stored);
     } else {
-      const supported = ['en', 'de'];
+      const supported = ['en', 'de', 'es'];
       const browserLangs = (navigator.languages || [navigator.language || ''])
         .map(l => l.split('-')[0].toLowerCase());
       const match = browserLangs.find(l => supported.includes(l));
@@ -359,6 +359,17 @@ export function AppProvider({ children }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // On signing in, the language comes from the account, so it follows people
+  // across browsers and devices.
+  useEffect(() => {
+    if (!loggedIn || demoMode) return undefined;
+    let active = true;
+    api.apiGetUiPreferences().then((result) => {
+      if (active && result?.ok && result.data?.language) setLang(result.data.language);
+    }).catch(() => {});
+    return () => { active = false; };
+  }, [loggedIn, demoMode]);
 
   // A language someone picks also goes to their account, so the app and the
   // server's reminders use it too (#535).

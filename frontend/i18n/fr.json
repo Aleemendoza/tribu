@@ -1144,6 +1144,7 @@
   "module.dashboard.module_rewards": "Récompenses",
   "module.dashboard.module_daily_loop": "Aujourd’hui en mouvement",
   "module.gifts.name": "Cadeaux",
+  "module.expenses.name": "Dépenses",
   "module.gifts.save": "Enregistrer",
   "module.gifts.created": "Idée notée",
   "module.gifts.updated": "Cadeau mis à jour",

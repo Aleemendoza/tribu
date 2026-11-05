@@ -1144,6 +1144,7 @@
   "module.dashboard.module_rewards": "Premi",
   "module.dashboard.module_daily_loop": "Oggi in movimento",
   "module.gifts.name": "Regali",
+  "module.expenses.name": "Spese",
   "module.gifts.save": "Salva",
   "module.gifts.created": "Idea annotata",
   "module.gifts.updated": "Regalo aggiornato",

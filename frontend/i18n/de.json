@@ -1165,6 +1165,7 @@
   "module.dashboard.module_rewards": "Rewards",
   "module.dashboard.module_daily_loop": "Tagesrunde",
   "module.gifts.name": "Geschenke",
+  "module.expenses.name": "Ausgaben",
   "module.gifts.save": "Speichern",
   "module.gifts.created": "Idee notiert",
   "module.gifts.updated": "Geschenk aktualisiert",

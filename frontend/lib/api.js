@@ -617,6 +617,10 @@ export function apiSetFamilyAreas(familyId, hidden_areas) {
 }
 
 // UI preferences shared with the app (theme and language)
+export function apiGetUiPreferences() {
+  return request('/nav/ui-preferences');
+}
+
 export function apiUpdateUiPreferences(preferences) {
   return request('/nav/ui-preferences', {
     method: 'PUT',
@@ -832,6 +836,59 @@ export function apiFulfillTransaction(id) { return patch(`/rewards/transactions/
 export function apiGetPraise(familyId, limit = 30) { return request(`/rewards/praise?family_id=${familyId}&limit=${limit}`); }
 export function apiCreatePraise(payload) { return post('/rewards/praise', payload); }
 export function apiDeletePraise(id) { return del(`/rewards/praise/${id}`); }
+
+// Expenses
+export function apiGetExpenses(familyId, year, month) {
+  return request(`/expenses?family_id=${familyId}&year=${year}&month=${month}`);
+}
+
+export function apiCreateExpense(payload) {
+  return post('/expenses', payload);
+}
+
+export function apiUpdateExpense(expenseId, payload) {
+  return patch(`/expenses/${expenseId}`, payload);
+}
+
+export function apiDeleteExpense(expenseId) {
+  return del(`/expenses/${expenseId}`);
+}
+
+export function apiGetFixedExpenses(familyId) {
+  return request(`/expenses/fixed?family_id=${familyId}`);
+}
+
+export function apiCreateFixedExpense(payload) {
+  return post('/expenses/fixed', payload);
+}
+
+export function apiUpdateFixedExpense(fixedId, payload) {
+  return patch(`/expenses/fixed/${fixedId}`, payload);
+}
+
+export function apiDeleteFixedExpense(fixedId) {
+  return del(`/expenses/fixed/${fixedId}`);
+}
+
+export function apiGetExpenseCategories(familyId) {
+  return request(`/expenses/categories?family_id=${familyId}`);
+}
+
+export function apiCreateExpenseCategory(payload) {
+  return post('/expenses/categories', payload);
+}
+
+export function apiUpdateExpenseCategory(categoryId, payload) {
+  return patch(`/expenses/categories/${categoryId}`, payload);
+}
+
+export function apiDeleteExpenseCategory(categoryId) {
+  return del(`/expenses/categories/${categoryId}`);
+}
+
+export function apiGetExpenseReport(familyId, year) {
+  return request(`/expenses/report?family_id=${familyId}&year=${year}`);
+}
 
 // Gifts
 export function apiGetGifts(familyId, { status = null, forUserId = null, occasion = null, includeGifted = true, sort = null, limit = null } = {}) {

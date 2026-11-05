@@ -1141,6 +1141,7 @@
   "module.dashboard.module_rewards": "Atlīdzības",
   "module.dashboard.module_daily_loop": "Šodien kustībā",
   "module.gifts.name": "Dāvanas",
+  "module.expenses.name": "Izdevumi",
   "module.gifts.save": "Saglabāt",
   "module.gifts.created": "Ideja pierakstīta",
   "module.gifts.updated": "Dāvana atjaunināta",
