@@ -26,6 +26,7 @@ function Probe() {
 
 describe('AppProvider bootstrap', () => {
   beforeEach(() => {
+    api.apiGetUiPreferences.mockResolvedValue({ ok: true, data: { language: 'en' } });
     jest.clearAllMocks();
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -128,6 +129,13 @@ describe('AppProvider bootstrap', () => {
     fireEvent.click(screen.getByRole('button', { name: 'German' }));
     expect(api.apiUpdateUiPreferences).toHaveBeenCalledWith({ language: 'de' });
     await waitFor(() => expect(window.localStorage.getItem('tribu_lang')).toBe('de'));
+  });
+
+  test('brings the language from the account on signing in', async () => {
+    window.localStorage.setItem('tribu_lang', 'de');
+    api.apiGetUiPreferences.mockResolvedValue({ ok: true, data: { language: 'es' } });
+    render(<AppProvider><Probe /></AppProvider>);
+    await waitFor(() => expect(window.localStorage.getItem('tribu_lang')).toBe('es'));
   });
 
   test('restores a valid Sunday week-start preference', async () => {

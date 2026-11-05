@@ -31,7 +31,7 @@
 .expenses-table.report th:first-child, .expenses-table.report td:first-child { position: sticky; left: 0; background: var(--surface-paper); }
 .expenses-table tfoot th, .expenses-table tfoot td { border-top: 2px solid var(--border-subtle); border-bottom: none; font-weight: 700; }
 
-.expenses-actions { display: flex; gap: 2px; justify-content: flex-end; }
+.expenses-table td.expenses-actions { text-align: right; padding-top: 6px; padding-bottom: 6px; }
 .expenses-icon { display: inline-grid; place-items: center; width: 34px; height: 34px; border: none; border-radius: 9px; background: transparent; color: var(--text-secondary); cursor: pointer; }
 .expenses-icon:hover { background: color-mix(in srgb, var(--amethyst) 10%, transparent); color: var(--text-primary); }
 .expenses-icon:focus-visible { outline: 2px solid var(--amethyst); outline-offset: 1px; }
@@ -58,4 +58,6 @@
   .expenses-form-row { grid-template-columns: minmax(0, 1fr); }
   .expenses-month-nav strong { min-width: 120px; font-size: 0.95rem; }
   .expenses-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .expenses-total { padding: 12px; }
+  .expenses-total strong { font-size: 0.95rem; }
 }

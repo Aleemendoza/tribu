@@ -9,7 +9,7 @@ let mockAppState = {};
 
 jest.mock('../../contexts/AppContext', () => ({
   useApp: () => mockAppState,
-  DEFAULT_NAV_ORDER: ['dashboard', 'calendar', 'weekly_plan', 'shopping', 'tasks', 'activity', 'templates', 'meal_plans', 'school_timetables', 'recipes', 'rewards', 'gifts', 'contacts', 'notifications', 'settings', 'admin'],
+  DEFAULT_NAV_ORDER: ['dashboard', 'calendar', 'weekly_plan', 'shopping', 'tasks', 'expenses', 'activity', 'templates', 'meal_plans', 'school_timetables', 'recipes', 'rewards', 'gifts', 'contacts', 'notifications', 'settings', 'admin'],
 }));
 
 jest.mock('../../lib/announce', () => ({ announce: jest.fn() }));
@@ -114,6 +114,7 @@ const messages = {
   'module.recipes.name': 'Recipes',
   'module.rewards.name': 'Rewards',
   'module.gifts.name': 'Gifts',
+  'module.expenses.name': 'Expenses',
   'module.school_timetables.name': 'School',
   'module.weekly_plan.title': 'Weekly plan',
   'search.title': 'Search',
@@ -186,7 +187,7 @@ describe('AppShell mobile bottom navigation', () => {
     mockAppState = baseState({ activeView: 'tasks', setActiveView });
     render(<AppShell />);
     const pages = screen.getByRole('navigation', { name: 'Pages in Lists' });
-    expect(within(pages).getAllByRole('button').map((chip) => chip.textContent)).toEqual(['Shopping2', 'Tasks1', 'Templates']);
+    expect(within(pages).getAllByRole('button').map((chip) => chip.textContent)).toEqual(['Shopping2', 'Tasks1', 'Expenses', 'Templates']);
     expect(within(pages).getByRole('button', { name: /Tasks/ })).toHaveAttribute('aria-current', 'page');
     fireEvent.click(within(pages).getByRole('button', { name: /Shopping/ }));
     expect(setActiveView).toHaveBeenCalledWith('shopping');
