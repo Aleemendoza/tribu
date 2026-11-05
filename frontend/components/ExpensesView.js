@@ -21,11 +21,11 @@ function problemOf(result) {
   return ERRORS[result?.data?.detail?.code] || 'No se pudo guardar. Probá de nuevo.';
 }
 
-function Total({ label, cents, tone }) {
+function Total({ label, cents, currency, tone }) {
   return (
     <div className={`expenses-total${tone ? ` ${tone}` : ''}`}>
       <span>{label}</span>
-      <strong>{formatMoney(cents)}</strong>
+      <strong>{formatMoney(cents, currency)}</strong>
     </div>
   );
 }
@@ -65,6 +65,7 @@ function MonthTab({ familyId, members, categories, categoryName }) {
   }
 
   const summary = data?.summary;
+  const dollars = data?.summary_usd;
   return (
     <>
       <div className="expenses-bar">
@@ -84,6 +85,14 @@ function MonthTab({ familyId, members, categories, categoryName }) {
           <Total label="Fijos" cents={summary.fixed_cents} />
           <Total label="Variables" cents={summary.variable_cents} />
           <Total label="Falta pagar" cents={summary.pending_cents} tone={summary.pending_cents > 0 ? 'pending' : ''} />
+        </div>
+      )}
+      {dollars?.total_cents > 0 && (
+        <div className="expenses-totals">
+          <Total label="Total en dólares" cents={dollars.total_cents} currency="USD" tone="main" />
+          <Total label="Fijos en dólares" cents={dollars.fixed_cents} currency="USD" />
+          <Total label="Variables en dólares" cents={dollars.variable_cents} currency="USD" />
+          <Total label="Falta pagar en dólares" cents={dollars.pending_cents} currency="USD" tone={dollars.pending_cents > 0 ? 'pending' : ''} />
         </div>
       )}
 
@@ -109,7 +118,7 @@ function MonthTab({ familyId, members, categories, categoryName }) {
                   <td>{categoryName(item.category_id)}</td>
                   <td>{item.kind === 'fixed' ? 'Fijo' : 'Variable'}</td>
                   <td>{memberName(item.paid_by_user_id)}</td>
-                  <td className="num">{formatMoney(item.amount_cents)}</td>
+                  <td className="num">{formatMoney(item.amount_cents, item.currency)}</td>
                   <td>
                     <input
                       type="checkbox"
@@ -191,7 +200,10 @@ function FixedTab({ familyId, categories, categoryName }) {
   }
 
   const now = new Date();
-  const total = (items || []).filter((item) => item.active).reduce((sum, item) => sum + item.amount_cents, 0);
+  const totalIn = (currency) => (items || [])
+    .filter((item) => item.active && item.currency === currency)
+    .reduce((sum, item) => sum + item.amount_cents, 0);
+  const dollars = totalIn('USD');
 
   return (
     <>
@@ -204,7 +216,10 @@ function FixedTab({ familyId, categories, categoryName }) {
         <p className="expenses-empty">Todavía no hay gastos fijos. Sumá el alquiler, los servicios o lo que se repita.</p>
       ) : (
         <>
-          <div className="expenses-totals"><Total label="Estimado por mes" cents={total} tone="main" /></div>
+          <div className="expenses-totals">
+            <Total label="Estimado por mes" cents={totalIn('ARS')} tone="main" />
+            {dollars > 0 && <Total label="Estimado en dólares" cents={dollars} currency="USD" tone="main" />}
+          </div>
           <div className="expenses-table-wrap">
             <table className="expenses-table">
               <thead>
@@ -219,7 +234,7 @@ function FixedTab({ familyId, categories, categoryName }) {
                     <td>{item.name}{item.notes && <small>{item.notes}</small>}</td>
                     <td>{categoryName(item.category_id)}</td>
                     <td>{item.due_day ? `Día ${item.due_day}` : ''}</td>
-                    <td className="num">{formatMoney(item.amount_cents)}</td>
+                    <td className="num">{formatMoney(item.amount_cents, item.currency)}</td>
                     <td><input type="checkbox" checked={item.active} aria-label={`${item.name} activo`} onChange={() => toggleActive(item)} /></td>
                     <td className="expenses-actions">
                       <button type="button" className="expenses-icon" aria-label={`Editar ${item.name}`} onClick={() => setDialog({ fixed: item })}><Pencil size={15} aria-hidden="true" /></button>
@@ -261,23 +276,73 @@ function FixedTab({ familyId, categories, categoryName }) {
   );
 }
 
+function ReportCurrency({ report, title }) {
+  const { currency, year } = report;
+  const money = (cents) => formatMoney(cents, currency);
+  return (
+    <>
+      {title && <h2 className="expenses-section-title">{title}</h2>}
+      <div className="expenses-totals">
+        <Total label={`Total ${year}`} cents={report.total_cents} currency={currency} tone="main" />
+        <Total label="Promedio por mes con gastos" cents={report.monthly_average_cents} currency={currency} />
+        <Total label="Fijos" cents={report.months.reduce((sum, row) => sum + row.fixed_cents, 0)} currency={currency} />
+        <Total label="Variables" cents={report.months.reduce((sum, row) => sum + row.variable_cents, 0)} currency={currency} />
+      </div>
+      <div className="expenses-table-wrap">
+        <table className="expenses-table report">
+          <thead>
+            <tr>
+              <th>Categoría</th>
+              {MONTH_NAMES.map((name) => <th key={name} className="num">{name.slice(0, 3)}</th>)}
+              <th className="num">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.categories.map((row) => (
+              <tr key={row.category_id ?? 'none'}>
+                <td>{row.name}</td>
+                {row.months.map((cents, index) => <td key={index} className="num">{cents ? money(cents) : '–'}</td>)}
+                <td className="num"><strong>{money(row.total_cents)}</strong></td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th>Total</th>
+              {report.months.map((row) => <td key={row.month} className="num">{row.total_cents ? money(row.total_cents) : '–'}</td>)}
+              <td className="num"><strong>{money(report.total_cents)}</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </>
+  );
+}
+
 function ReportTab({ familyId }) {
   const [year, setYear] = useState(() => new Date().getFullYear());
-  const [report, setReport] = useState(null);
+  const [reports, setReports] = useState(null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let active = true;
-    api.apiGetExpenseReport(familyId, year).then((result) => {
+    Promise.all([
+      api.apiGetExpenseReport(familyId, year, 'ARS'),
+      api.apiGetExpenseReport(familyId, year, 'USD'),
+    ]).then(([pesos, dollars]) => {
       if (!active) return;
-      setFailed(!result.ok);
-      setReport(result.ok ? result.data : null);
+      const ok = pesos.ok && dollars.ok;
+      setFailed(!ok);
+      setReports(ok ? { pesos: pesos.data, dollars: dollars.data } : null);
     });
     return () => { active = false; };
   }, [familyId, year]);
 
+  const hasDollars = reports?.dollars.total_cents > 0;
+
   function download() {
-    const url = URL.createObjectURL(new Blob([reportCsv(report)], { type: 'text/csv;charset=utf-8' }));
+    const blocks = hasDollars ? [reports.pesos, reports.dollars] : [reports.pesos];
+    const url = URL.createObjectURL(new Blob([reportCsv(blocks)], { type: 'text/csv;charset=utf-8' }));
     const link = document.createElement('a');
     link.href = url;
     link.download = `gastos-${year}.csv`;
@@ -293,44 +358,13 @@ function ReportTab({ familyId }) {
           <strong>{year}</strong>
           <button type="button" className="btn-ghost" aria-label="Año siguiente" onClick={() => setYear((y) => y + 1)}><ChevronRight size={18} aria-hidden="true" /></button>
         </div>
-        <button type="button" className="btn-ghost" disabled={!report} onClick={download}><Download size={16} aria-hidden="true" /> Exportar CSV</button>
+        <button type="button" className="btn-ghost" disabled={!reports} onClick={download}><Download size={16} aria-hidden="true" /> Exportar CSV</button>
       </div>
       {failed && <p className="expenses-error" role="alert">No se pudo cargar el reporte. Recargá la página.</p>}
-      {report && (
+      {reports && (
         <>
-          <div className="expenses-totals">
-            <Total label={`Total ${year}`} cents={report.total_cents} tone="main" />
-            <Total label="Promedio por mes con gastos" cents={report.monthly_average_cents} />
-            <Total label="Fijos" cents={report.months.reduce((sum, row) => sum + row.fixed_cents, 0)} />
-            <Total label="Variables" cents={report.months.reduce((sum, row) => sum + row.variable_cents, 0)} />
-          </div>
-          <div className="expenses-table-wrap">
-            <table className="expenses-table report">
-              <thead>
-                <tr>
-                  <th>Categoría</th>
-                  {MONTH_NAMES.map((name) => <th key={name} className="num">{name.slice(0, 3)}</th>)}
-                  <th className="num">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {report.categories.map((row) => (
-                  <tr key={row.category_id ?? 'none'}>
-                    <td>{row.name}</td>
-                    {row.months.map((cents, index) => <td key={index} className="num">{cents ? formatMoney(cents) : '–'}</td>)}
-                    <td className="num"><strong>{formatMoney(row.total_cents)}</strong></td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <th>Total</th>
-                  {report.months.map((row) => <td key={row.month} className="num">{row.total_cents ? formatMoney(row.total_cents) : '–'}</td>)}
-                  <td className="num"><strong>{formatMoney(report.total_cents)}</strong></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
+          <ReportCurrency report={reports.pesos} title={hasDollars ? 'En pesos' : ''} />
+          {hasDollars && <ReportCurrency report={reports.dollars} title="En dólares" />}
         </>
       )}
     </>

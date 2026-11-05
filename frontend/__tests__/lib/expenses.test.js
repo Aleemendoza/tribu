@@ -48,23 +48,35 @@ describe('amounts and days', () => {
   });
 });
 
+describe('dollars', () => {
+  it('shows dollars apart from pesos', () => {
+    expect(formatMoney(1999, 'USD').replace(/\s/g, ' ')).toBe('US$ 19,99');
+  });
+});
+
 describe('reportCsv', () => {
   const months = Array.from({ length: 12 }, (_, i) => ({
     month: i + 1, total_cents: i === 0 ? 150050 : 0, fixed_cents: 0, variable_cents: i === 0 ? 150050 : 0, pending_cents: 0,
   }));
   const report = {
+    currency: 'ARS',
     months,
     total_cents: 150050,
     categories: [{ category_id: 1, name: 'Luz; gas', months: [150050, ...Array(11).fill(0)], total_cents: 150050 }],
   };
 
   it('uses semicolons, decimal commas and keeps accents for Excel', () => {
-    const csv = reportCsv(report);
+    const csv = reportCsv([report]);
     expect(csv.charCodeAt(0)).toBe(0xFEFF);
     const lines = csv.slice(1).split('\r\n');
-    expect(lines[0].startsWith('Categoría;Enero;Febrero')).toBe(true);
+    expect(lines[0].startsWith('Categoría (pesos);Enero;Febrero')).toBe(true);
     expect(lines[1].startsWith('"Luz; gas";1500,50;0,00')).toBe(true);
     expect(lines[1].endsWith(';1500,50')).toBe(true);
     expect(lines[2].startsWith('Total;1500,50')).toBe(true);
+  });
+
+  it('adds a separate block for dollars', () => {
+    const lines = reportCsv([report, { ...report, currency: 'USD' }]).split('\r\n');
+    expect(lines.filter((line) => line.startsWith('Categoría (dólares);Enero'))).toHaveLength(1);
   });
 });

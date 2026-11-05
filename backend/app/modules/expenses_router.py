@@ -6,6 +6,9 @@ the template or other months. Months are generated when someone looks at them,
 and only up to the current month. An expense keeps the month it belongs to in
 ``period``, so totals by month need no date arithmetic in the database.
 
+Each amount is in pesos or dollars. They are totalled apart and never added
+together, because no exchange rate is assumed.
+
 Money belongs to the adults: children and other families are refused.
 """
 
@@ -36,6 +39,7 @@ from app.schemas import (
     ExpenseCategoryResponse,
     ExpenseCategoryUpdate,
     ExpenseCreate,
+    ExpenseCurrency,
     ExpenseMonthResponse,
     ExpenseReportResponse,
     ExpenseResponse,
@@ -48,7 +52,8 @@ from app.schemas import (
 router = APIRouter(prefix="/expenses", tags=["expenses"], responses={**AUTH_RESPONSES})
 
 DEFAULT_CATEGORIES = (
-    "Vivienda", "Servicios", "Supermercado", "Transporte", "Salud", "Educación", "Impuestos", "Ocio", "Otros",
+    "Vivienda", "Servicios", "Suscripciones", "Supermercado", "Transporte", "Salud", "Educación", "Impuestos",
+    "Ocio", "Otros",
 )
 UNCATEGORIZED = "Sin categoría"
 
@@ -119,6 +124,7 @@ def _generate_month(db: Session, family_id: int, period: date) -> None:
             fixed_expense_id=item.id,
             description=item.name,
             amount_cents=item.amount_cents,
+            currency=item.currency,
             spent_on=period.replace(day=min(item.due_day or 1, last_day)),
             period=period,
             kind="fixed",
@@ -307,6 +313,7 @@ def delete_fixed(
 def yearly_report(
     family_id: int,
     year: int = Query(ge=2000, le=2100),
+    currency: ExpenseCurrency = "ARS",
     user: User = Depends(current_user),
     db: Session = Depends(get_db),
     _scope=require_scope("expenses:read"),
@@ -317,6 +324,7 @@ def yearly_report(
 
     rows = db.query(Expense).filter(
         Expense.family_id == family_id,
+        Expense.currency == currency,
         Expense.skipped.is_(False),
         Expense.period >= date(year, 1, 1),
         Expense.period <= date(year, 12, 1),
@@ -349,6 +357,7 @@ def yearly_report(
     used = sum(1 for month in months if month["total_cents"] > 0)
     return {
         "year": year,
+        "currency": currency,
         "months": months,
         "categories": categories,
         "total_cents": total,
@@ -374,7 +383,13 @@ def list_month(
     items = db.query(Expense).filter(
         Expense.family_id == family_id, Expense.period == period, Expense.skipped.is_(False),
     ).order_by(Expense.spent_on, Expense.id).all()
-    return {"year": year, "month": month, "items": items, "summary": _summary(items)}
+    return {
+        "year": year,
+        "month": month,
+        "items": items,
+        "summary": _summary([row for row in items if row.currency == "ARS"]),
+        "summary_usd": _summary([row for row in items if row.currency == "USD"]),
+    }
 
 
 @router.post("", response_model=ExpenseResponse, summary="Add an expense")

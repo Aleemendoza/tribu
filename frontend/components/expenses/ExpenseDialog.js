@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import { X } from 'lucide-react';
 import { inBody } from '../inBody';
-import { amountText, parseAmount } from '../../lib/expenses';
+import { CURRENCIES, amountText, parseAmount } from '../../lib/expenses';
 
 function CategorySelect({ value, categories, onChange }) {
   return (
@@ -36,6 +36,14 @@ function Shell({ title, onClose, onSubmit, saving, error, children }) {
   );
 }
 
+function CurrencySelect({ value, onChange }) {
+  return (
+    <select className="form-input" value={value} onChange={(e) => onChange(e.target.value)}>
+      {CURRENCIES.map(([code, label]) => <option key={code} value={code}>{label}</option>)}
+    </select>
+  );
+}
+
 function Field({ label, children }) {
   return <label className="expenses-field"><span>{label}</span>{children}</label>;
 }
@@ -45,6 +53,7 @@ export function ExpenseDialog({ expense, day, categories, members, onSave, onClo
   const [form, setForm] = useState(() => ({
     description: expense?.description ?? '',
     amount: amountText(expense?.amount_cents),
+    currency: expense?.currency ?? 'ARS',
     spent_on: expense?.spent_on ?? day,
     category_id: expense?.category_id ?? null,
     kind: expense?.kind ?? 'variable',
@@ -66,6 +75,7 @@ export function ExpenseDialog({ expense, day, categories, members, onSave, onClo
     const problem = await onSave({
       description: form.description.trim(),
       amount_cents,
+      currency: form.currency,
       spent_on: form.spent_on,
       category_id: form.category_id,
       kind: form.kind,
@@ -83,36 +93,39 @@ export function ExpenseDialog({ expense, day, categories, members, onSave, onClo
         <input className="form-input" value={form.description} maxLength={160} autoFocus onChange={(e) => set('description', e.target.value)} />
       </Field>
       <div className="expenses-form-row">
-        <Field label="Monto ($)">
+        <Field label="Monto">
           <input className="form-input" inputMode="decimal" placeholder="1.234,50" value={form.amount} onChange={(e) => set('amount', e.target.value)} />
         </Field>
-        <Field label="Fecha">
-          <input className="form-input" type="date" required value={form.spent_on} onChange={(e) => set('spent_on', e.target.value)} />
+        <Field label="Moneda">
+          <CurrencySelect value={form.currency} onChange={(value) => set('currency', value)} />
         </Field>
       </div>
       <div className="expenses-form-row">
+        <Field label="Fecha">
+          <input className="form-input" type="date" required value={form.spent_on} onChange={(e) => set('spent_on', e.target.value)} />
+        </Field>
         <Field label="Categoría">
           <CategorySelect value={form.category_id} categories={categories} onChange={(value) => set('category_id', value)} />
         </Field>
+      </div>
+      <div className="expenses-form-row">
         <Field label="Tipo">
           <select className="form-input" value={form.kind} onChange={(e) => set('kind', e.target.value)}>
             <option value="variable">Variable</option>
             <option value="fixed">Fijo</option>
           </select>
         </Field>
-      </div>
-      <div className="expenses-form-row">
         <Field label="Quién pagó">
           <select className="form-input" value={form.paid_by_user_id ?? ''} onChange={(e) => set('paid_by_user_id', e.target.value ? Number(e.target.value) : null)}>
             <option value="">Sin indicar</option>
             {members.map((member) => <option key={member.user_id} value={member.user_id}>{member.display_name}</option>)}
           </select>
         </Field>
-        <label className="expenses-check">
-          <input type="checkbox" checked={form.paid} onChange={(e) => set('paid', e.target.checked)} />
-          <span>Ya está pagado</span>
-        </label>
       </div>
+      <label className="expenses-check">
+        <input type="checkbox" checked={form.paid} onChange={(e) => set('paid', e.target.checked)} />
+        <span>Ya está pagado</span>
+      </label>
       <Field label="Notas">
         <input className="form-input" value={form.notes} maxLength={500} onChange={(e) => set('notes', e.target.value)} />
       </Field>
@@ -125,6 +138,7 @@ export function FixedDialog({ fixed, month, categories, onSave, onClose }) {
   const [form, setForm] = useState(() => ({
     name: fixed?.name ?? '',
     amount: amountText(fixed?.amount_cents),
+    currency: fixed?.currency ?? 'ARS',
     due_day: fixed?.due_day ?? '',
     category_id: fixed?.category_id ?? null,
     starts_on: (fixed?.starts_on ?? month).slice(0, 7),
@@ -146,6 +160,7 @@ export function FixedDialog({ fixed, month, categories, onSave, onClose }) {
     const problem = await onSave({
       name: form.name.trim(),
       amount_cents,
+      currency: form.currency,
       due_day: due,
       category_id: form.category_id,
       starts_on: `${form.starts_on}-01`,
@@ -161,21 +176,24 @@ export function FixedDialog({ fixed, month, categories, onSave, onClose }) {
         <input className="form-input" value={form.name} maxLength={120} autoFocus placeholder="Alquiler" onChange={(e) => set('name', e.target.value)} />
       </Field>
       <div className="expenses-form-row">
-        <Field label="Monto estimado ($)">
+        <Field label="Monto estimado">
           <input className="form-input" inputMode="decimal" placeholder="1.234,50" value={form.amount} onChange={(e) => set('amount', e.target.value)} />
         </Field>
-        <Field label="Día de vencimiento">
-          <input className="form-input" inputMode="numeric" placeholder="10" value={form.due_day} onChange={(e) => set('due_day', e.target.value)} />
+        <Field label="Moneda">
+          <CurrencySelect value={form.currency} onChange={(value) => set('currency', value)} />
         </Field>
       </div>
       <div className="expenses-form-row">
-        <Field label="Categoría">
-          <CategorySelect value={form.category_id} categories={categories} onChange={(value) => set('category_id', value)} />
+        <Field label="Día de vencimiento">
+          <input className="form-input" inputMode="numeric" placeholder="10" value={form.due_day} onChange={(e) => set('due_day', e.target.value)} />
         </Field>
         <Field label="Desde el mes">
           <input className="form-input" type="month" required value={form.starts_on} onChange={(e) => set('starts_on', e.target.value)} />
         </Field>
       </div>
+      <Field label="Categoría">
+        <CategorySelect value={form.category_id} categories={categories} onChange={(value) => set('category_id', value)} />
+      </Field>
       <Field label="Notas">
         <input className="form-input" value={form.notes} maxLength={500} onChange={(e) => set('notes', e.target.value)} />
       </Field>

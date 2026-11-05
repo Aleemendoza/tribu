@@ -37,6 +37,7 @@
 .expenses-icon:focus-visible { outline: 2px solid var(--amethyst); outline-offset: 1px; }
 
 .expenses-empty { padding: 28px 18px; border: 1px dashed var(--border-subtle); border-radius: 16px; color: var(--text-secondary); text-align: center; }
+.expenses-section-title { margin: 8px 0 0; color: var(--text-primary); font-size: 1.05rem; font-weight: 700; }
 .expenses-hint { margin: 0; color: var(--text-secondary); font-size: 0.86rem; }
 .expenses-error { margin: 0; color: var(--error, #ef4444); font-size: 0.88rem; font-weight: 600; }
 

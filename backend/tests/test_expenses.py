@@ -290,6 +290,45 @@ def test_report_generates_fixed_of_months_nobody_opened(client, ctx):
     assert _report(client, ctx)["total_cents"] == 80000000
 
 
+def test_dollars_are_totalled_apart_from_pesos(client, ctx):
+    _expense(client, ctx, amount_cents=100000, spent_on="2026-11-05")
+    _expense(client, ctx, amount_cents=1999, currency="USD", spent_on="2026-11-05")
+    data = _month(client, ctx)
+    assert {row["currency"] for row in data["items"]} == {"ARS", "USD"}
+    assert data["summary"]["total_cents"] == 100000
+    assert data["summary_usd"]["total_cents"] == 1999
+
+
+def test_unknown_currency_is_rejected(client, ctx):
+    resp = client.post(
+        "/expenses",
+        json={"family_id": ctx["family"], "description": "x", "amount_cents": 1, "spent_on": "2026-11-05", "currency": "EUR"},
+        headers=_h(ctx["adult"]),
+    )
+    assert resp.status_code == 422
+
+
+def test_subscription_in_dollars_keeps_its_currency_every_month(client, ctx):
+    _fixed(client, ctx, name="Streaming", amount_cents=1599, currency="USD")
+    data = _month(client, ctx)
+    streaming = next(row for row in data["items"] if row["description"] == "Streaming")
+    assert streaming["currency"] == "USD"
+    assert data["summary"]["total_cents"] == 0
+    assert data["summary_usd"]["pending_cents"] == 1599
+
+
+def test_yearly_report_is_by_currency(client, ctx):
+    _expense(client, ctx, amount_cents=100000, spent_on="2026-03-05")
+    _expense(client, ctx, amount_cents=1999, currency="USD", spent_on="2026-03-05")
+    assert _report(client, ctx)["total_cents"] == 100000
+    resp = client.get(f"/expenses/report?family_id={ctx['family']}&year=2026&currency=USD", headers=_h(ctx["adult"]))
+    assert resp.status_code == 200
+    usd = resp.json()
+    assert usd["currency"] == "USD"
+    assert usd["total_cents"] == 1999
+    assert usd["months"][2]["variable_cents"] == 1999
+
+
 def test_invalid_month_is_rejected(client, ctx):
     resp = client.get(f"/expenses?family_id={ctx['family']}&year=2026&month=13", headers=_h(ctx["adult"]))
     assert resp.status_code == 422

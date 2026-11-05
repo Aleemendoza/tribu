@@ -2939,10 +2939,14 @@ class ExpenseCategoryResponse(BaseModel):
     name: str
 
 
+ExpenseCurrency = Literal["ARS", "USD"]
+
+
 class FixedExpenseCreate(BaseModel):
     family_id: int
     name: str = Field(min_length=1, max_length=120)
     amount_cents: int = Field(ge=0, le=MAX_EXPENSE_CENTS)
+    currency: ExpenseCurrency = "ARS"
     category_id: Optional[int] = None
     due_day: Optional[int] = Field(None, ge=1, le=31)
     starts_on: Optional[date] = Field(None, description="Its month is the first it applies to; this month if empty")
@@ -2953,6 +2957,7 @@ class FixedExpenseCreate(BaseModel):
 class FixedExpenseUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=120)
     amount_cents: Optional[int] = Field(None, ge=0, le=MAX_EXPENSE_CENTS)
+    currency: Optional[ExpenseCurrency] = None
     category_id: Optional[int] = None
     due_day: Optional[int] = Field(None, ge=1, le=31)
     starts_on: Optional[date] = None
@@ -2966,6 +2971,7 @@ class FixedExpenseResponse(BaseModel):
     family_id: int
     name: str
     amount_cents: int
+    currency: str
     category_id: Optional[int]
     due_day: Optional[int]
     starts_on: date
@@ -2977,6 +2983,7 @@ class ExpenseCreate(BaseModel):
     family_id: int
     description: str = Field(min_length=1, max_length=160)
     amount_cents: int = Field(ge=0, le=MAX_EXPENSE_CENTS)
+    currency: ExpenseCurrency = "ARS"
     spent_on: date
     category_id: Optional[int] = None
     kind: ExpenseKind = "variable"
@@ -2988,6 +2995,7 @@ class ExpenseCreate(BaseModel):
 class ExpenseUpdate(BaseModel):
     description: Optional[str] = Field(None, min_length=1, max_length=160)
     amount_cents: Optional[int] = Field(None, ge=0, le=MAX_EXPENSE_CENTS)
+    currency: Optional[ExpenseCurrency] = None
     spent_on: Optional[date] = None
     category_id: Optional[int] = None
     kind: Optional[ExpenseKind] = None
@@ -3002,6 +3010,7 @@ class ExpenseResponse(BaseModel):
     family_id: int
     description: str
     amount_cents: int
+    currency: str
     spent_on: date
     category_id: Optional[int]
     fixed_expense_id: Optional[int]
@@ -3022,7 +3031,9 @@ class ExpenseMonthResponse(BaseModel):
     year: int
     month: int
     items: list[ExpenseResponse]
+    # Pesos and dollars are never added together: no exchange rate is assumed.
     summary: ExpenseSummary
+    summary_usd: ExpenseSummary
 
 
 class ExpenseReportMonth(ExpenseSummary):
@@ -3038,6 +3049,7 @@ class ExpenseReportCategory(BaseModel):
 
 class ExpenseReportResponse(BaseModel):
     year: int
+    currency: str
     months: list[ExpenseReportMonth]
     categories: list[ExpenseReportCategory]
     total_cents: int

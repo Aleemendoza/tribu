@@ -1360,6 +1360,7 @@ class FixedExpense(Base):
     category_id = Column(Integer, ForeignKey("expense_categories.id", ondelete="SET NULL"), nullable=True)
     name = Column(String(120), nullable=False)
     amount_cents = Column(BigInteger, nullable=False)
+    currency = Column(String(3), nullable=False, default="ARS", server_default="ARS")
     due_day = Column(Integer, nullable=True)
     # First day of the first month it applies to.
     starts_on = Column(Date, nullable=False)
@@ -1385,6 +1386,7 @@ class Expense(Base):
     created_by_user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     description = Column(String(160), nullable=False)
     amount_cents = Column(BigInteger, nullable=False)
+    currency = Column(String(3), nullable=False, default="ARS", server_default="ARS")
     spent_on = Column(Date, nullable=False)
     # First day of the month it counts for.
     period = Column(Date, nullable=False)

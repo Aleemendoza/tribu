@@ -886,8 +886,8 @@ export function apiDeleteExpenseCategory(categoryId) {
   return del(`/expenses/categories/${categoryId}`);
 }
 
-export function apiGetExpenseReport(familyId, year) {
-  return request(`/expenses/report?family_id=${familyId}&year=${year}`);
+export function apiGetExpenseReport(familyId, year, currency = 'ARS') {
+  return request(`/expenses/report?family_id=${familyId}&year=${year}&currency=${currency}`);
 }
 
 // Gifts

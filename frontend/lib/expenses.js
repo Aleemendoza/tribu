@@ -1,15 +1,20 @@
 // Household expenses: money, months and the yearly CSV.
-// Amounts travel as whole cents; people read and type Argentine pesos.
+// Amounts travel as whole cents, in pesos or dollars, written the Argentine way.
 
-const moneyFormat = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
+export const CURRENCIES = [['ARS', 'Pesos'], ['USD', 'Dólares']];
+
+const moneyFormats = {
+  ARS: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }),
+  USD: new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'USD' }),
+};
 
 export const MONTH_NAMES = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
 ];
 
-export function formatMoney(cents) {
-  return moneyFormat.format((cents || 0) / 100);
+export function formatMoney(cents, currency = 'ARS') {
+  return moneyFormats[currency].format((cents || 0) / 100);
 }
 
 // What someone typed, in whole cents, or null if it is not an amount.
@@ -67,17 +72,19 @@ function csvCell(value) {
   return /[;"\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
+// One block per currency, one after the other, since they are never added up.
 // Plain decimal numbers with a comma and ";" between cells, as Excel in
 // Argentina expects. The leading BOM keeps the accents.
-export function reportCsv(report) {
+export function reportCsv(reports) {
   const money = (cents) => ((cents || 0) / 100).toFixed(2).replace('.', ',');
-  const lines = [
-    ['Categoría', ...MONTH_NAMES, 'Total'],
+  const block = (report) => [
+    [`Categoría (${report.currency === 'USD' ? 'dólares' : 'pesos'})`, ...MONTH_NAMES, 'Total'],
     ...report.categories.map((row) => [row.name, ...row.months.map(money), money(row.total_cents)]),
     ['Total', ...report.months.map((row) => money(row.total_cents)), money(report.total_cents)],
     ['Fijos', ...report.months.map((row) => money(row.fixed_cents))],
     ['Variables', ...report.months.map((row) => money(row.variable_cents))],
     ['Pendiente', ...report.months.map((row) => money(row.pending_cents))],
   ];
+  const lines = reports.flatMap((report, index) => [...(index ? [[]] : []), ...block(report)]);
   return `﻿${lines.map((line) => line.map(csvCell).join(';')).join('\r\n')}\r\n`;
 }
