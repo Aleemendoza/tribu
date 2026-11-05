@@ -2915,3 +2915,130 @@ class NotificationDestinationProviderStatusResponse(BaseModel):
 class NotificationDestinationTestResponse(BaseModel):
     status: str
     error: Optional[str] = None
+
+
+# ── Expenses ────────────────────────────────────────────────
+
+MAX_EXPENSE_CENTS = 10_000_000_000_000
+ExpenseKind = Literal["fixed", "variable"]
+
+
+class ExpenseCategoryCreate(BaseModel):
+    family_id: int
+    name: str = Field(min_length=1, max_length=60)
+
+
+class ExpenseCategoryUpdate(BaseModel):
+    name: str = Field(min_length=1, max_length=60)
+
+
+class ExpenseCategoryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    family_id: int
+    name: str
+
+
+class FixedExpenseCreate(BaseModel):
+    family_id: int
+    name: str = Field(min_length=1, max_length=120)
+    amount_cents: int = Field(ge=0, le=MAX_EXPENSE_CENTS)
+    category_id: Optional[int] = None
+    due_day: Optional[int] = Field(None, ge=1, le=31)
+    starts_on: Optional[date] = Field(None, description="Its month is the first it applies to; this month if empty")
+    active: bool = True
+    notes: Optional[str] = Field(None, max_length=500)
+
+
+class FixedExpenseUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=120)
+    amount_cents: Optional[int] = Field(None, ge=0, le=MAX_EXPENSE_CENTS)
+    category_id: Optional[int] = None
+    due_day: Optional[int] = Field(None, ge=1, le=31)
+    starts_on: Optional[date] = None
+    active: Optional[bool] = None
+    notes: Optional[str] = Field(None, max_length=500)
+
+
+class FixedExpenseResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    family_id: int
+    name: str
+    amount_cents: int
+    category_id: Optional[int]
+    due_day: Optional[int]
+    starts_on: date
+    active: bool
+    notes: Optional[str]
+
+
+class ExpenseCreate(BaseModel):
+    family_id: int
+    description: str = Field(min_length=1, max_length=160)
+    amount_cents: int = Field(ge=0, le=MAX_EXPENSE_CENTS)
+    spent_on: date
+    category_id: Optional[int] = None
+    kind: ExpenseKind = "variable"
+    paid: bool = True
+    paid_by_user_id: Optional[int] = None
+    notes: Optional[str] = Field(None, max_length=500)
+
+
+class ExpenseUpdate(BaseModel):
+    description: Optional[str] = Field(None, min_length=1, max_length=160)
+    amount_cents: Optional[int] = Field(None, ge=0, le=MAX_EXPENSE_CENTS)
+    spent_on: Optional[date] = None
+    category_id: Optional[int] = None
+    kind: Optional[ExpenseKind] = None
+    paid: Optional[bool] = None
+    paid_by_user_id: Optional[int] = None
+    notes: Optional[str] = Field(None, max_length=500)
+
+
+class ExpenseResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    family_id: int
+    description: str
+    amount_cents: int
+    spent_on: date
+    category_id: Optional[int]
+    fixed_expense_id: Optional[int]
+    kind: str
+    paid: bool
+    paid_by_user_id: Optional[int]
+    notes: Optional[str]
+
+
+class ExpenseSummary(BaseModel):
+    total_cents: int
+    fixed_cents: int
+    variable_cents: int
+    pending_cents: int
+
+
+class ExpenseMonthResponse(BaseModel):
+    year: int
+    month: int
+    items: list[ExpenseResponse]
+    summary: ExpenseSummary
+
+
+class ExpenseReportMonth(ExpenseSummary):
+    month: int
+
+
+class ExpenseReportCategory(BaseModel):
+    category_id: Optional[int]
+    name: str
+    months: list[int]
+    total_cents: int
+
+
+class ExpenseReportResponse(BaseModel):
+    year: int
+    months: list[ExpenseReportMonth]
+    categories: list[ExpenseReportCategory]
+    total_cents: int
+    monthly_average_cents: int

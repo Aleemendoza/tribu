@@ -67,6 +67,7 @@ from app.modules.oidc_router import router as oidc_admin_router
 from app.modules.setup_router import router as setup_router
 from app.modules.search_router import router as search_router
 from app.modules.rewards_router import router as rewards_router
+from app.modules.expenses_router import router as expenses_router
 from app.modules.gifts_router import router as gifts_router
 from app.modules.meal_plans_router import router as meal_plans_router
 from app.modules.recipes_router import router as recipes_router
@@ -205,6 +206,7 @@ TAG_METADATA = [
     {"name": "sso", "description": "Single Sign-On (OpenID Connect) login flow: public config, authorize redirect, callback."},
     {"name": "nav", "description": "User navigation bar order customization."},
     {"name": "setup", "description": "Initial setup wizard — check status and restore from backup. Only available on empty databases."},
+    {"name": "expenses", "description": "Household expenses: fixed and variable, month by month, with yearly reports."},
     {"name": "gifts", "description": "Gifts around people and occasions: ideas hidden from the person they are for, wishes, \"I'll take care of it\", budgets and link previews."},
     {"name": "meal_plans", "description": "Weekly meal planning across fixed morning/noon/evening slots. Available to all family members."},
     {"name": "recipes", "description": "Lightweight family recipe library connected to meal planning and shopping lists."},
@@ -859,6 +861,7 @@ app.include_router(setup_router)
 app.include_router(search_router)
 app.include_router(rewards_router)
 app.include_router(gifts_router)
+app.include_router(expenses_router)
 app.include_router(meal_plans_router)
 app.include_router(recipes_router)
 app.include_router(school_timetables_router)

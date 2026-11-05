@@ -1336,3 +1336,61 @@ class ProcessRun(Base):
     # Set on a clean shutdown, or to last_seen_at once a run is found dead.
     stopped_at = Column(DateTime, nullable=True)
     crashed = Column(Boolean, nullable=False, default=False, server_default=text("false"))
+
+
+class ExpenseCategory(Base):
+    """A family's own grouping of expenses."""
+
+    __tablename__ = "expense_categories"
+    __table_args__ = (UniqueConstraint("family_id", "name", name="uq_expense_category_name"),)
+
+    id = Column(Integer, primary_key=True, index=True)
+    family_id = Column(Integer, ForeignKey("families.id", ondelete="CASCADE"), nullable=False, index=True)
+    name = Column(String(60), nullable=False)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+
+
+class FixedExpense(Base):
+    """An expense that comes back every month, such as the rent."""
+
+    __tablename__ = "fixed_expenses"
+
+    id = Column(Integer, primary_key=True, index=True)
+    family_id = Column(Integer, ForeignKey("families.id", ondelete="CASCADE"), nullable=False, index=True)
+    category_id = Column(Integer, ForeignKey("expense_categories.id", ondelete="SET NULL"), nullable=True)
+    name = Column(String(120), nullable=False)
+    amount_cents = Column(BigInteger, nullable=False)
+    due_day = Column(Integer, nullable=True)
+    # First day of the first month it applies to.
+    starts_on = Column(Date, nullable=False)
+    active = Column(Boolean, nullable=False, default=True, server_default=text("true"))
+    notes = Column(String(500), nullable=True)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+
+
+class Expense(Base):
+    """One amount in one month, entered by hand or generated from a fixed expense."""
+
+    __tablename__ = "expenses"
+    __table_args__ = (
+        UniqueConstraint("fixed_expense_id", "period", name="uq_expense_fixed_period"),
+        Index("ix_expenses_family_period", "family_id", "period"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    family_id = Column(Integer, ForeignKey("families.id", ondelete="CASCADE"), nullable=False)
+    category_id = Column(Integer, ForeignKey("expense_categories.id", ondelete="SET NULL"), nullable=True)
+    fixed_expense_id = Column(Integer, ForeignKey("fixed_expenses.id", ondelete="SET NULL"), nullable=True)
+    paid_by_user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_by_user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    description = Column(String(160), nullable=False)
+    amount_cents = Column(BigInteger, nullable=False)
+    spent_on = Column(Date, nullable=False)
+    # First day of the month it counts for.
+    period = Column(Date, nullable=False)
+    kind = Column(String(10), nullable=False, default="variable", server_default="variable")
+    paid = Column(Boolean, nullable=False, default=True, server_default=text("true"))
+    # A generated month someone removed: kept so it is not generated again.
+    skipped = Column(Boolean, nullable=False, default=False, server_default=text("false"))
+    notes = Column(String(500), nullable=True)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())

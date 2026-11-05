@@ -121,6 +121,11 @@ INVALID_UI_PREFERENCE = "INVALID_UI_PREFERENCE"
 
 # ── Gifts ────────────────────────────────────────────────────
 GIFT_NOT_FOUND = "GIFT_NOT_FOUND"
+EXPENSE_NOT_FOUND = "EXPENSE_NOT_FOUND"
+FIXED_EXPENSE_NOT_FOUND = "FIXED_EXPENSE_NOT_FOUND"
+EXPENSE_CATEGORY_NOT_FOUND = "EXPENSE_CATEGORY_NOT_FOUND"
+EXPENSE_CATEGORY_EXISTS = "EXPENSE_CATEGORY_EXISTS"
+EXPENSE_PAYER_NOT_MEMBER = "EXPENSE_PAYER_NOT_MEMBER"
 GIFT_RECIPIENT_NOT_FAMILY_MEMBER = "GIFT_RECIPIENT_NOT_FAMILY_MEMBER"
 GIFT_RECIPIENT_CONFLICT = "GIFT_RECIPIENT_CONFLICT"
 INVALID_GIFT_STATUS = "INVALID_GIFT_STATUS"
@@ -287,6 +292,11 @@ _DEFAULT_MESSAGES: dict[str, str] = {
     PRAISE_SELF: "You cannot praise yourself",
     BIRTHDAY_FROM_PROFILE: "This birthday comes from a family member's profile; change it there",
     GIFT_NOT_FOUND: "Gift not found",
+    EXPENSE_NOT_FOUND: "Expense not found",
+    FIXED_EXPENSE_NOT_FOUND: "Fixed expense not found",
+    EXPENSE_CATEGORY_NOT_FOUND: "Expense category not found",
+    EXPENSE_CATEGORY_EXISTS: "This expense category already exists",
+    EXPENSE_PAYER_NOT_MEMBER: "Who paid must be a member of the family",
     GIFT_RECIPIENT_NOT_FAMILY_MEMBER: "Gift recipient is not a family member",
     GIFT_RECIPIENT_CONFLICT: "Choose one recipient: a family member, a contact or a name",
     INVALID_GIFT_STATUS: "Invalid gift status: {status}",
